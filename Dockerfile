@@ -14,4 +14,4 @@ RUN pipenv --three
 RUN pipenv install 
 
 EXPOSE 5000
-CMD "/usr/src/app/bootstrap.sh"
+CMD "/usr/src/app/startup.sh"
