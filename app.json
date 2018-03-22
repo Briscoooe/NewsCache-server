@@ -1,0 +1,7 @@
+{
+    "name": "NewsCache server",
+    "description": "The server for the NewsCache mobile client",
+    "repository": "https://github.com/Briscoooe/NewsCache-server",
+    "keywords": ["python", "flask"]
+  }
+  
