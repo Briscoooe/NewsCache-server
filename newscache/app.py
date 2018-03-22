@@ -26,3 +26,6 @@ def test():
 @requires_key
 def add_income():
     return '', 200
+
+if __name__ == '__main__':
+    app.run(debug=True)

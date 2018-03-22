@@ -1,1 +1,1 @@
-web: gunicorn newscache:index
+web: gunicorn newscache.app:app
