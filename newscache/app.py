@@ -37,7 +37,8 @@ def test():
 def page_not_found(e):
     return 'NOT FOUND', codes.not_found
 
-# Add 405 error handler
+# Add 405 error handler - method not allowed
+# Add custom 401 error handler - unauthorized
 
 
 @app.route('/sources', methods=['POST'])

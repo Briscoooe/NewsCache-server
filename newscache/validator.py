@@ -19,7 +19,7 @@ def validate_request_params(request_params, request_type):
         valid_params[PAGE_SIZE_KEY] = get_key_value(PAGE_SIZE_KEY, request_params)
         valid_params[PAGE_KEY] = get_key_value(PAGE_KEY, request_params)
 
-    if request_type == RequestType.HEADLINES:
+    if request_type == RequestType.EVERYTHING:
         valid_params[DOMAINS_KEY] = get_key_value(DOMAINS_KEY, request_params)
         valid_params[FROM_KEY] = get_key_value(FROM_KEY, request_params)
         valid_params[TO_KEY] = get_key_value(TO_KEY, request_params)
