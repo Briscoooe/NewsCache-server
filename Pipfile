@@ -4,10 +4,12 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-flask = "*"
+Flask = "*"
 gunicorn = "*"
 requests = "*"
 newsapi-python = "*"
+"newspaper3k" = {git = "git://github.com/Briscoooe/newspaper"}
+jsonpickle = "*"
 
 [dev-packages]
 
