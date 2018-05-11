@@ -2,6 +2,11 @@
     "name": "NewsCache server",
     "description": "The server for the NewsCache service", 
     "repository": "https://github.com/Briscoooe/NewsCache-server",
-    "keywords": ["python", "flask"]
+    "keywords": ["python", "flask"],
+    "env": {
+      "NEWS_API_KEY": {
+        "description": "Your API key from https://newsapi.org/",
+      }
+    }
   }
   
