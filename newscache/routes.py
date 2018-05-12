@@ -1,12 +1,12 @@
 import os
-from flask import abort, jsonify, request, Blueprint
-from functools import wraps
+from flask import jsonify, request, Blueprint
 from newsapi import NewsApiClient
-from newsapi.newsapi_exception import NewsAPIException
 from newscache.np import download_articles_from_urls
 from newscache.constants import *
 from newscache.validator import validate_request_params
 from newscache.enums import RequestType
+from newscache.utils import api_key_is_match
+from newscache.decorators import requires_key, exception_handler
 from requests import codes
 from jsonpickle import encode
 blueprint = Blueprint('routes', __name__)
@@ -14,65 +14,17 @@ blueprint = Blueprint('routes', __name__)
 api_key = os.environ[API_KEY_ENV_VARIABLE_KEY]
 news_api = NewsApiClient(api_key=api_key)
 
-error_message_format = 'Error: {}'
-error_key = 'Error:'
-
-
-def api_key_is_match(headers):
-    return headers.get(API_KEY_HEADER_KEY) and headers.get(API_KEY_HEADER_KEY) == api_key
-
-
-def exception_handler(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        try:
-            return f(*args, **kwargs)
-        except (TypeError, ValueError) as e:
-            print(error_message_format.format(str(e)))
-            response_body = {
-                error_key: str(e)
-            }
-            response_code = codes.bad_request
-            return jsonify(response_body), response_code
-        except NewsAPIException as e:
-            print(e)
-            response_body = {
-                error_key: e.get_message()
-            }
-            response_code = codes.bad_request
-            return jsonify(response_body), response_code
-        except Exception as e:
-            print(error_message_format.format(str(e)))
-            response_body = {
-                error_key: str(e)
-            }
-            response_code = codes.server_error
-            return jsonify(response_body), response_code
-
-    return decorated
-
-
-def requires_key(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        if api_key_is_match(request.headers):
-            return f(*args, **kwargs)
-        else:
-            abort(codes.unauthorized)
-
-    return decorated
-
 
 @blueprint.route('/verify', methods=['POST'])
 def verify_key_matches():
-    if api_key_is_match(request.headers):
+    if api_key_is_match(api_key, request.headers):
         return 'OK', codes.ok
     else:
-        return 'News API key does not match', codes.unauthorized
+        return 'News API key is not present or does not match', codes.unauthorized
 
 
 @blueprint.route('/sources', methods=['POST'])
-@requires_key
+@requires_key(api_key)
 @exception_handler
 def get_sources():
     params = validate_request_params(request.get_json(), RequestType.SOURCES)
@@ -88,7 +40,7 @@ def get_sources():
 
 
 @blueprint.route('/headlines', methods=['POST'])
-@requires_key
+@requires_key(api_key)
 @exception_handler
 def get_headlines():
     params = validate_request_params(request.get_json(), RequestType.HEADLINES)
@@ -108,7 +60,7 @@ def get_headlines():
 
 
 @blueprint.route('/everything', methods=['POST'])
-@requires_key
+@requires_key(api_key)
 @exception_handler
 def get_all():
     params = validate_request_params(request.get_json(), RequestType.EVERYTHING)
@@ -130,7 +82,7 @@ def get_all():
 
 
 @blueprint.route('/download', methods=['POST'])
-@requires_key
+@requires_key(api_key)
 def download_articles():
     body = request.get_json()
     if ARTICLES_KEY not in body:
@@ -140,6 +92,5 @@ def download_articles():
     if len(body[ARTICLES_KEY]) <= 0:
         return '"{}" length is 0. Please pass a list of articles'.format(ARTICLES_KEY), codes.bad_request
     articles = download_articles_from_urls(body[ARTICLES_KEY])
-    print(encode(articles))
     return encode(articles), codes.ok
 
