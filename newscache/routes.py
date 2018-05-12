@@ -1,12 +1,12 @@
 import os
-from flask import jsonify, request, Blueprint
+from flask import jsonify, request, Blueprint, current_app
 from newsapi import NewsApiClient
 from newscache.np import download_articles_from_urls
 from newscache.constants import *
 from newscache.validator import validate_request_params
 from newscache.enums import RequestType
 from newscache.utils import api_key_is_match
-from newscache.decorators import requires_key, exception_handler
+from newscache.decorators import requires_key, handle_exception, log_request
 from requests import codes
 from jsonpickle import encode
 blueprint = Blueprint('routes', __name__)
@@ -16,6 +16,7 @@ news_api = NewsApiClient(api_key=api_key)
 
 
 @blueprint.route('/verify', methods=['POST'])
+@log_request
 def verify_key_matches():
     if api_key_is_match(api_key, request.headers):
         return 'OK', codes.ok
@@ -25,7 +26,8 @@ def verify_key_matches():
 
 @blueprint.route('/sources', methods=['POST'])
 @requires_key(api_key)
-@exception_handler
+@handle_exception
+@log_request
 def get_sources():
     params = validate_request_params(request.get_json(), RequestType.SOURCES)
     response = news_api.get_sources(
@@ -41,7 +43,8 @@ def get_sources():
 
 @blueprint.route('/headlines', methods=['POST'])
 @requires_key(api_key)
-@exception_handler
+@handle_exception
+@log_request
 def get_headlines():
     params = validate_request_params(request.get_json(), RequestType.HEADLINES)
     response = news_api.get_top_headlines(
@@ -61,7 +64,8 @@ def get_headlines():
 
 @blueprint.route('/everything', methods=['POST'])
 @requires_key(api_key)
-@exception_handler
+@handle_exception
+@log_request
 def get_all():
     params = validate_request_params(request.get_json(), RequestType.EVERYTHING)
     response = news_api.get_everything(
@@ -83,6 +87,7 @@ def get_all():
 
 @blueprint.route('/download', methods=['POST'])
 @requires_key(api_key)
+@log_request
 def download_articles():
     body = request.get_json()
     if ARTICLES_KEY not in body:
