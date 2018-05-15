@@ -1,14 +1,13 @@
 import os
-from flask import jsonify, request, Blueprint, current_app
+from flask import jsonify, request, Blueprint
 from newsapi import NewsApiClient
-from newscache.np import download_articles_from_urls
+from newscache.newspaper_client import download_articles_from_urls
 from newscache.constants import *
 from newscache.validator import validate_request_params
 from newscache.enums import RequestType
 from newscache.utils import api_key_is_match
 from newscache.decorators import requires_key, handle_exception, log_request
 from requests import codes
-from jsonpickle import encode
 blueprint = Blueprint('routes', __name__)
 
 api_key = os.environ[API_KEY_ENV_VARIABLE_KEY]
@@ -21,7 +20,7 @@ def verify_key_matches():
     if api_key_is_match(api_key, request.headers):
         return 'OK', codes.ok
     else:
-        return 'News API key is not present or does not match', codes.unauthorized
+        return jsonify({'Error': 'News API key is not present or does not match'}), codes.unauthorized
 
 
 @blueprint.route('/sources', methods=['POST'])
@@ -97,5 +96,5 @@ def download_articles():
     if len(body[ARTICLES_KEY]) <= 0:
         return '"{}" length is 0. Please pass a list of articles'.format(ARTICLES_KEY), codes.bad_request
     articles = download_articles_from_urls(body[ARTICLES_KEY])
-    return encode(articles), codes.ok
+    return jsonify({'articles': articles}), codes.ok
 

@@ -1,3 +1,4 @@
 .vscode
 .idea
 newscache/__pycache__
+newscache/*.log

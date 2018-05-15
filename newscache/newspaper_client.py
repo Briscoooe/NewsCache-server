@@ -1,4 +1,5 @@
 from newspaper import Article, news_pool
+from flask import jsonify
 
 
 def trim_articles(articles):
@@ -10,7 +11,7 @@ def trim_articles(articles):
             'publish_date': article.publish_date,
             'authors': article.authors,
             'summary': article.summary,
-            'imgs': article.imgs,
+            'imgs': list(article.imgs),
             'text': article.text,
             'url': article.url
         }
