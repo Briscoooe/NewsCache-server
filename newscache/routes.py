@@ -35,9 +35,8 @@ def get_sources():
         country=params[COUNTRY_KEY]
     )
     response_body = response[SOURCES_KEY]
-    response_code = codes.ok
 
-    return jsonify(response_body), response_code
+    return jsonify(response_body), codes.ok
 
 
 @blueprint.route('/headlines', methods=['POST'])
@@ -56,9 +55,8 @@ def get_headlines():
         page=params[PAGE_KEY]
     )
     response_body = response[ARTICLES_KEY]
-    response_code = codes.ok
 
-    return jsonify(response_body), response_code
+    return jsonify(response_body), codes.ok
 
 
 @blueprint.route('/everything', methods=['POST'])
@@ -79,9 +77,8 @@ def get_all():
         page=params[PAGE_KEY]
     )
     response_body = response[ARTICLES_KEY]
-    response_code = codes.ok
 
-    return jsonify(response_body), response_code
+    return jsonify(response_body), codes.ok
 
 
 @blueprint.route('/download', methods=['POST'])

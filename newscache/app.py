@@ -12,4 +12,4 @@ if __name__ == '__main__':
     handler = RotatingFileHandler('newscache.log', maxBytes=10000, backupCount=1)
     handler.setLevel(logging.DEBUG)
     app.logger.addHandler(handler)
-    app.run(debug=True)
+    app.run()
